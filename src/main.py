@@ -335,13 +335,19 @@ if __name__ == "__main__":
     input_source = "C:/Users/Isidora/Downloads/test_image.jpg"  # Path to image/video or "0" for webcam
     save_predictions = True
 
+    input_filename = os.path.basename(input_source)
+    input_name, input_ext = os.path.splitext(input_filename)
+    output_filename = f"{input_name}_output{input_ext}"
+
     # Output paths
     base_output_path = "test/"
-    output_path_pred = os.path.join(base_output_path, "test6_processed.mp4")
+    output_path_pred = os.path.join(base_output_path, output_filename)
     output_folder_json = os.path.join(base_output_path, "json")
 
     # Model path
-    model_path = "weights/lmai-11n-seg.pt"
+    model_path = "../weights/lmai-11m-seg.pt"
+
+
 
     # === Ensure output directories exist ===
     os.makedirs(base_output_path, exist_ok=True)
@@ -357,35 +363,3 @@ if __name__ == "__main__":
         output_path=output_path_pred if save_predictions else None,
         json_output_dir=output_folder_json
     )
-
-
-""" if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-
-    # === USER CONFIGURATION ===
-    input_folder = "C:/Users/Isidora/Downloads/test/test"  # Carpeta con imágenes
-    output_folder = "C:/Users/Isidora/Desktop/proyectos-isi/liquid/output2/medium"
-    model_path = "./weight/yolo11m/best.pt"
-    # ===========================
-
-    # Crear carpeta de salida si no existe
-    os.makedirs(output_folder, exist_ok=True)
-
-    # Cargar modelo
-    loader = YOLOLoader(model_path, device='cuda')
-
-    # Obtener lista de imágenes
-    image_paths = glob.glob(os.path.join(input_folder, "*.*"))  # Lee todos los archivos (puedes filtrar por .jpg, .png, etc.)
-
-    for image_path in image_paths:
-        filename = os.path.basename(image_path)
-        output_image_path = os.path.join(output_folder, filename)
-
-        run_detection(
-            source=image_path,
-            model_loader=loader,
-            conf=0.5,
-            save_output=True,
-            output_path=output_image_path,
-            json_output_dir=output_folder  # JSONs se guardarán en la misma carpeta que las imágenes
-        ) """
