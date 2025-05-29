@@ -5,6 +5,7 @@ import json
 import psutil
 import random
 import logging
+import argparse
 import datetime
 import torch
 import numpy as np
@@ -331,34 +332,41 @@ def run_detection(source, model_loader: YOLOLoader, conf=0.25, save_output=False
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    #=== USER CONFIGURATION ===
-    input_source = "C:/Users/Isidora/Downloads/test_image.jpg"  # Path to image/video or "0" for webcam
-    save_predictions = True
+    # === Argument parser ===
+    parser = argparse.ArgumentParser(description="Run YOLO-based object detection.")
+    parser.add_argument("--input", required=True, help="Path to input image/video or '0' for webcam")
+    parser.add_argument("--model", default="../weights/lmai-11m-seg.pt", help="Path to YOLO model")
+    parser.add_argument("--conf", type=float, default=0.5, help="Confidence threshold for detections (default: 0.5)")
+    parser.add_argument("--output-dir", default="output/", help="Base directory to save output files")
+    parser.add_argument("--save", action="store_true", help="Save predictions as image and JSON")
 
+
+    args = parser.parse_args()
+
+    input_source = args.input
+    model_path = args.model
+    base_output_path = args.output_dir
+    save_predictions = args.save
+    conf_threshold = args.conf
+
+    # === Generate dynamic output filename ===
     input_filename = os.path.basename(input_source)
     input_name, input_ext = os.path.splitext(input_filename)
     output_filename = f"{input_name}_output{input_ext}"
 
-    # Output paths
-    base_output_path = "test/"
+    # === Output paths ===
     output_path_pred = os.path.join(base_output_path, output_filename)
     output_folder_json = os.path.join(base_output_path, "json")
 
-    # Model path
-    model_path = "../weights/lmai-11m-seg.pt"
-
-
-
-    # === Ensure output directories exist ===
     os.makedirs(base_output_path, exist_ok=True)
     os.makedirs(output_folder_json, exist_ok=True)
-    #===========================
 
+    # === Run detection ===
     loader = YOLOLoader(model_path, device='cuda')
     run_detection(
         source=input_source,
         model_loader=loader,
-        conf=0.5,
+        conf=conf_threshold,
         save_output=save_predictions,
         output_path=output_path_pred if save_predictions else None,
         json_output_dir=output_folder_json
