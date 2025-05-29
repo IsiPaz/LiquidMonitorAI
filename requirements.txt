@@ -42,3 +42,5 @@ ultralytics==8.3.130
 ultralytics-thop==2.0.14
 urllib3==2.2.3
 zipp==3.20.2
+pycocotools==2.0.8
+cython==3.0.11
